@@ -1,0 +1,31 @@
+version: '3.5'
+services:
+  traefik:
+    image: traefik:latest
+    container_name: traefik
+    restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
+    networks:
+       proxy:
+    ports:
+      - 80:80
+      - 443:443
+      - 8080:8080
+    volumes:
+      - /opt/traefik/traefik.yml:/traefik.yml:ro
+      - /opt/traefik/traefik_dynamic.yml:/traefik_dynamic.yml:ro
+      - /opt/traefik/acme.json:/acme.json
+      - /usr/share/zoneinfo/Europe/Moscow:/etc/localtime:ro
+      - /opt/traefik/logs:/var/log/traefik
+    command:
+      - "--configFile=/traefik.yml"
+    environment:
+      - DUCKDNS_TOKEN=70c32b4f-c502-498f-a398-75c1f82131fb
+    labels:
+      - "traefik.enable=true"
+
+networks:
+  proxy:
+    name: proxy
+    external: true
