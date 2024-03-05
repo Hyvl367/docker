@@ -1,0 +1,79 @@
+http:
+  middlewares:
+    simpleAuth:
+      basicAuth:
+        users:
+          - 'admin:$apr1$phSEQYpg$Ql0AvLQYFtgqG2ppZhJHP.'
+
+  routers:
+    dashy:
+      rule: Host(`dashy.encorenex.duckdns.org`)
+      entrypoints:
+        - websecure
+      service: dashy
+      tls:
+        certResolver: letsencrypt
+
+    homechart:
+      rule: Host(`homechart.encorenex.duckdns.org`)
+      entrypoints:
+        - websecure
+      service: homechart
+      tls:
+        certResolver: letsencrypt
+
+    grafana:
+      rule: Host(`grafana.encorenex.duckdns.org`)
+      entrypoints:
+        - websecure
+      service: grafana
+      tls:
+        certResolver: letsencrypt
+
+    zabbix:
+      rule: Host(`zabbix.encorenex.duckdns.org`)
+      entrypoints:
+        - websecure
+      service: zabbix
+      tls:
+        certResolver: letsencrypt
+
+    api:
+      rule: Host(`monitor.encorenex.duckdns.org`)
+      entrypoints:
+        - websecure
+      middlewares:
+        - simpleAuth
+      service: api@internal
+      tls:
+        certResolver: letsencrypt
+
+    portainer:
+      rule: Host(`portainer.encorenex.duckdns.org`)
+      entrypoints:
+        - websecure
+      tls:
+        certResolver: letsencrypt
+      service: portainer
+
+  services:
+    dashy:
+      loadBalancer:
+        servers:
+          - url: 'http://172.18.0.4'
+    portainer:
+      loadBalancer:
+        servers:
+          - url: 'http://172.18.0.3:9000'
+    zabbix:
+      loadBalancer:
+        servers:
+          - url: 'http://172.18.0.6:8080'
+    grafana:
+      loadBalancer:
+        servers:
+          - url: 'http://172.18.0.11:3000'
+    homechart:
+      loadBalancer:
+        servers:
+          - url: 'http://172.18.0.10:3000'

@@ -1,0 +1,30 @@
+version: '3'
+
+services:
+  prometheus:
+    image: prom/prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./prometheus:/opt/prometheus
+    command:
+      - '--config.file=/opt/prometheus/prometheus.yml'
+    networks:
+      - proxy
+
+  grafana:
+    image: grafana/grafana
+    ports:
+      - "3000:3000"
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=admin  #  ^w         ^b    ^a            ^`     ^l
+    depends_on:
+      - prometheus
+    networks:
+      - proxy
+        ipv4_address: 172.18.0.9
+      
+networks:
+  proxy:
+    external: true
+    driver: bridge

@@ -1,0 +1,38 @@
+accessLog: {}
+
+global:
+  checkNewVersion: true
+  sendAnonymousUsage: false
+
+entrypoints:
+  web:
+    address: ':80'
+    http:
+      redirections:
+        entrypoint:
+          to: websecure
+          scheme: https
+  websecure:
+    address: ':443'
+  traefik:
+    address: ':8080'
+
+log:
+  level: DEBUG
+
+api:
+  insecure: true
+  dashboard: true
+
+certificatesresolvers:
+  letsencrypt:
+    acme:
+      email: cnofbmal@icloud.com
+      storage: acme.json
+      tlschallenge: true
+     # dnsChallenge:
+     #  provider: duckdns
+
+providers:
+  file:
+    filename: traefik_dynamic.yml
