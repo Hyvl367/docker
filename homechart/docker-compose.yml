@@ -1,0 +1,31 @@
+version: "3"
+services:
+  homechart:
+    depends_on:
+      - postgres
+    environment:
+      HOMECHART_POSTGRESQL_HOSTNAME: postgres
+      HOMECHART_POSTGRESQL_PASSWORD: postgres
+      HOMECHART_POSTGRESQL_USERNAME: postgres
+    image: ghcr.io/candiddev/homechart:latest
+    ports:
+      - "3000:3000"
+    restart: always
+    networks:
+      - proxy
+  postgres:
+    environment:
+      POSTGRES_PASSWORD: postgres
+    image: docker.io/postgres:14
+    restart: always
+    volumes:
+      - postgres:/var/lib/postgresql/data
+    networks:
+      - proxy
+
+networks:
+  proxy:
+    external: true
+
+volumes:
+  postgres: {}

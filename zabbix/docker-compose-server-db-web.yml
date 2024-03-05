@@ -1,0 +1,62 @@
+    version: "3.9"
+     
+    services:
+     
+      zabbix-mariadb:
+        image: mariadb:11.2.3-jammy
+        container_name: zabbix-mariadb
+        hostname: zabbix-mariadb
+        restart: unless-stopped
+        environment:
+          TZ: "Europe/Moscow"
+          MYSQL_ROOT_USER: root
+          MYSQL_ROOT_PASSWORD: secret
+          MYSQL_DATABASE: zabbix
+          MYSQL_USER: zabbix
+          MYSQL_PASSWORD: zabbixpass
+        networks:
+          - proxy
+        volumes:
+          - /opt/zabbix/mariadb/data:/var/lib/mysql
+     
+      zabbix-server:
+        image: zabbix/zabbix-server-mysql
+        container_name: zabbix-server
+        hostname: zabbix-server
+        restart: unless-stopped
+        environment:
+          TZ: "Europe/Moscow"
+          DB_SERVER_HOST: zabbix-mariadb
+          MYSQL_USER: zabbix
+          MYSQL_PASSWORD: zabbixpass
+        ports:
+        - 10051:10051
+        networks:
+          proxy:
+
+        depends_on:
+          - zabbix-mariadb
+     
+      zabbix-web:
+        image: zabbix/zabbix-web-nginx-mysql
+        container_name: zabbix-web
+        hostname: zabbix-web
+        restart: unless-stopped
+        environment:
+          TZ: "Europe/Moscow"
+          DB_SERVER_HOST: zabbix-mariadb
+          MYSQL_USER: zabbix
+          MYSQL_PASSWORD: zabbixpass
+          ZBX_SERVER_HOST: zabbix-server
+          PHP_TZ: "Europe/Moscow"
+        ports:
+          - 4822:8080
+        networks:
+          - proxy
+        depends_on:
+          - zabbix-mariadb
+          - zabbix-server
+     
+    networks:
+      proxy:
+        external: true
